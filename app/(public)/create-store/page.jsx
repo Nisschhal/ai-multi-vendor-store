@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import toast from "react-hot-toast"
 import Loading from "@/components/Loading"
-import { useUser } from "@clerk/nextjs"
-
+import { useUser, useAuth } from "@clerk/nextjs"
+import axios from "axios"
 import { useRouter } from "next/navigation"
 
 export default function CreateStore() {
@@ -34,18 +34,113 @@ export default function CreateStore() {
 
   const fetchSellerStatus = async () => {
     // Logic to check if the store is already submitted
-
-    setLoading(false)
+    const token = await getToken()
+    try {
+      const { data } = await axios.get("/api/store/create", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (["approved", "pending", "rejected"].includes(data.store.status)) {
+        setAlreadySubmitted(true)
+        setStatus(data.store.status)
+        switch (data.store.status) {
+          case "approved":
+            setMessage(
+              "Your store has been approved! Redirecting to dashboard 😊...",
+            )
+            setTimeout(() => {
+              router.push("/store/dashboard")
+            }, 5000)
+            break
+          case "pending":
+            setMessage(
+              "Your store is under review! Please wait for admin approval. 🤗",
+            )
+            break
+          case "rejected":
+            setMessage(
+              "Your store has been rejected! Please contact admin for more information. 😔",
+            )
+            break
+          default:
+            break
+        }
+      } else {
+        setAlreadySubmitted(false)
+      }
+      setLoading(false)
+    } catch (error) {
+      console.log("[STORE_CREATE] Fetch Status", error)
+      toast.error(
+        error?.response?.data?.error || "Failed to fetch store status",
+      )
+      setLoading(false)
+    }
   }
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
-    // Logic to submit the store details
+    if (!user) {
+      return toast("Please login to continue")
+    }
+
+    try {
+      const token = await getToken()
+      const formData = new FormData()
+      formData.append("name", storeInfo.name)
+      formData.append("username", storeInfo.username)
+      formData.append("description", storeInfo.description)
+      formData.append("email", storeInfo.email)
+      formData.append("contact", storeInfo.contact)
+      formData.append("address", storeInfo.address)
+      formData.append("image", storeInfo.image)
+      const { data } = await axios.post("/api/store/create", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      toast.success(data.message || "Store created successfully")
+      await fetchSellerStatus()
+    } catch (error) {
+      console.log("[STORE_CREATE] Form", error)
+      toast.error(error?.response?.data?.error || "Something went wrong")
+    }
   }
 
+  // Check if user is logged in
   useEffect(() => {
-    fetchSellerStatus()
-  }, [])
+    if (user) fetchSellerStatus()
+  }, [user])
+
+  // Countdown for redirection
+  const [count, setCount] = useState(5)
+
+  useEffect(() => {
+    let countdown
+    if (status === "approved") {
+      let counter = 5
+      countdown = setInterval(() => {
+        counter -= 1
+        setCount(counter)
+        if (counter === 0) {
+          clearInterval(countdown)
+        }
+      }, 1000)
+    }
+    return () => clearInterval(countdown)
+  }, [status])
+
+  if (!user) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center">
+        <p className="sm:text-2xl lg:text-3xl mx-5 font-semibold text-slate-500 text-center max-w-2xl">
+          Please login to create a store.
+        </p>
+      </div>
+    )
+  }
 
   return !loading ? (
     <>
@@ -167,7 +262,7 @@ export default function CreateStore() {
           {status === "approved" && (
             <p className="mt-5 text-slate-400">
               redirecting to dashboard in{" "}
-              <span className="font-semibold">5 seconds</span>
+              <span className="font-semibold">{count} seconds</span>
             </p>
           )}
         </div>
