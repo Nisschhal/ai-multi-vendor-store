@@ -70,3 +70,16 @@
         - make function to sync clerk user to our database: create, update, delete
 
 ## Ingest Trigger for the ingest to trigger we need live url/api/ingest/route.ts so it will be triggered on every request: clerk user create, update, delete
+
+    - for now deploy to vercel
+    - Make sure the change the script in package.json for vercel
+    ``` JS
+         "scripts": {
+        "dev": "next dev",
+        "build": "prisma generate && next build",
+        "start": "next start",
+        "lint": "eslint",
+        "postinstall": "prisma generate"
+    },
+    ```
+    - now deploy to vercel
