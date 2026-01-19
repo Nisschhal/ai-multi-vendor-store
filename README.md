@@ -83,3 +83,5 @@
     },
     ```
     - now deploy to vercel
+    - Go to Ingest dashboard -> App -> Sync new app using deployed vercel <vercel_url>/api/ingest
+      - Make sure the check env variables name, they should be as suggested by the Ingest docs
