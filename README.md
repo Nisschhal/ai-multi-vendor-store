@@ -93,3 +93,26 @@
     - copy private, public key and url-endpoint(at the top) to .env file
 
     - install imagekit: for nodejs as api runs on nodejs `npm install @imagekit/nodejs`
+
+# APIs for Store
+
+    - create store
+    - update store
+    - delete store
+    - get store by id
+
+# APIs for Product
+
+    - create product
+    - update product
+    - delete product
+    - get product by id
+
+## make sure to pass the token from the useAuth() to the api in the header in Bearer `token` format
+
+    ```JS
+        import { useUser, useAuth } from "@clerk/nextjs"
+        const user = useUser()
+        const { getToken } = useAuth()
+        const token = await getToken()
+    ```

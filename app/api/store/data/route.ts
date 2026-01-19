@@ -27,6 +27,10 @@ export async function GET(request: NextRequest) {
       include: { Product: { include: { rating: true } } },
     })
 
+    if (!storeInfo) {
+      return NextResponse.json({ error: "Store not found" }, { status: 404 })
+    }
+
     // 4. Return the created product
     return NextResponse.json(
       { storeInfo, message: "Store info retrieved successfully" },
