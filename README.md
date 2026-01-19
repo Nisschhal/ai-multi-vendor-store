@@ -85,3 +85,11 @@
     - now deploy to vercel
     - Go to Ingest dashboard -> App -> Sync new app using deployed vercel <vercel_url>/api/ingest
       - Make sure the check env variables name, they should be as suggested by the Ingest docs
+
+# Imagekit
+
+    - signup for imagekit
+    - go to developer in side nav bar
+    - copy private, public key and url-endpoint(at the top) to .env file
+
+    - install imagekit: for nodejs as api runs on nodejs `npm install @imagekit/nodejs`
