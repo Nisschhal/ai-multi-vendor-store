@@ -56,7 +56,7 @@ export const deleteCouponOnExpiry = inngest.createFunction(
         event: "app/coupon.deleted",
         // async.data is the data from the previous step on which this is waiting
         // event.data is the data from the cancelling event
-        if: "async.data.code === event.data.code",
+        if: "async.data.code == event.data.code",
       },
     ],
   },
