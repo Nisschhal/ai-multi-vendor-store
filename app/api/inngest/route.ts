@@ -1,5 +1,6 @@
 import { inngest } from "@/ingest/client"
 import {
+  deleteCouponOnExpiry,
   syncUserCreation,
   syncUserDeletion,
   syncUserUpdate,
@@ -9,5 +10,10 @@ import { serve } from "inngest/next"
 // Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [syncUserCreation, syncUserUpdate, syncUserDeletion],
+  functions: [
+    syncUserCreation,
+    syncUserUpdate,
+    syncUserDeletion,
+    deleteCouponOnExpiry,
+  ],
 })

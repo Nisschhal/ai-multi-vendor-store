@@ -1,5 +1,6 @@
 // Add new coupon
 
+import { inngest } from "@/ingest/client"
 import { prisma } from "@/lib/prisma"
 import { authAdmin } from "@/middleware/authAdmin"
 import { getAuth } from "@clerk/nextjs/server"
@@ -39,9 +40,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const newCoupon = await prisma.coupon.create({
-      data: coupon,
-    })
+    const newCoupon = await prisma.coupon
+      .create({
+        data: coupon,
+      })
+      .then(async (coupon) => {
+        await inngest.send({
+          name: "app/coupon.expired",
+          data: {
+            couponId: coupon.code,
+            expiresAt: coupon.expiresAt,
+          },
+        })
+      })
 
     return NextResponse.json(
       { coupon: newCoupon, message: "Coupon created successfully" },
@@ -79,9 +90,18 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Missing coupon ID" }, { status: 400 })
     }
 
-    await prisma.coupon.delete({
-      where: { code: couponId },
-    })
+    await prisma.coupon
+      .delete({
+        where: { code: couponId },
+      })
+      .then(async (coupon) => {
+        await inngest.send({
+          name: "app/coupon.deleted",
+          data: {
+            code: coupon.code,
+          },
+        })
+      })
 
     return NextResponse.json(
       { message: "Coupon deleted successfully" },
