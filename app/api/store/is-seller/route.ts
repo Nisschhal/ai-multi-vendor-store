@@ -18,12 +18,14 @@ export async function GET(request: NextRequest) {
         { status: 401 },
       )
     }
+    console.log("Store ID:", storeId)
 
     const storeInfo = await prisma.store.findUnique({
       where: { id: storeId },
     })
+    console.log("Store Info:", storeInfo)
 
-    return NextResponse.json({ isSeller: true, storeId }, { status: 200 })
+    return NextResponse.json({ isSeller: true, storeInfo }, { status: 200 })
   } catch (error) {
     console.log("[IS_SELLER]", error)
 

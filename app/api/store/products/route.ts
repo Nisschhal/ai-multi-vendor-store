@@ -27,10 +27,13 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const name = formData.get("name") as string
     const description = formData.get("description") as string
-    const mrp = parseFloat(formData.get("price") as string)
+    const mrp = parseFloat(formData.get("mrp") as string)
     const price = Math.round(mrp * 100) / 100 // Round to 2 decimal places
     const category = formData.get("category") as string
     const images = formData.getAll("images") as File[]
+    console.log("Images:", images)
+
+    console.log("Form Data:", formData)
 
     // 5. Validate input
     if (!name || !description || !price || images.length === 0) {
@@ -87,7 +90,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GEt all products for a store
-export async function GEt(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // 1. get the Authenticated userID
 

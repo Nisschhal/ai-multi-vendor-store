@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["img.clerk.com", "ik.imagekit.io"],
   },
+  // increase bodysize limit in post api or get api
 }
 
 export default nextConfig
